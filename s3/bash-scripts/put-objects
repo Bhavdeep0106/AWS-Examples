@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# check for bucket
+if [ -z "$1" ]; then
+    echo "There need to be a bucket name eg. ./bucket  my-bucket-name-1015612"
+    exit 1
+fi
+
+# check for file name prefix
+if [ -z "$2" ]; then
+    echo "There need to be a bucket name eg. ./bucket  my-bucket-name-1015612"
+    exit 1
+fi
+
+BUCKET_NAME=$1
+FILENAME=$2
+
+OBJECT_KEY=$(basename "$FILENAME")
+
+aws s3api put-object\
+ --bucket $BUCKET_NAME \
+ --body $FILENAME \
+ --key $OBJECT_KEY
