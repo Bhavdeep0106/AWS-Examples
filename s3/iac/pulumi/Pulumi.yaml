@@ -1,0 +1,11 @@
+name: aws-s3-python
+description: a python project for creating a bucket in s3
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python
