@@ -1,87 +1,134 @@
-# S3 Bucket Naming Rules – Simple Version
-
-## 1. Length
-- Must be **3 to 63 characters**
-
-Memory: Minimum 3, Maximum 63
+# S3 – Fast Revision Notes
 
 ---
 
-## 2. Allowed Characters
-- Lowercase letters only  
-- Numbers  
-- Dots `.`  
-- Hyphens `-`
+# 1. Bucket Naming Rules
 
-Memory: small letters, numbers, dot, dash
-
----
-
-## 3. Start and End Rule
-- Must **start with a letter or number**
-- Must **end with a letter or number**
-
-Memory: No dot or dash at the edges
+- 3 to 63 characters
+- Lowercase letters, numbers, . and - only
+- Must start and end with letter or number
+- No double dots
+- Cannot look like an IP address
+- No reserved prefixes: xn--, sthree-, sthree-configuration-
+- No reserved suffixes: -s3alias, --ol-s3
+- Must be globally unique
+- No dots if using Transfer Acceleration
 
 ---
 
-## 4. No Double Dots
-- Cannot contain `..`
+# 2. Bucket Restrictions and Limits
 
-Example:  
-- ❌ my..bucket  
-- ✅ my.bucket  
-
----
-
-## 5. Cannot Look Like an IP Address
-- Cannot be formatted like: `192.168.1.1`
-
-Memory: No IP-style names
-
----
-
-## 6. Restricted Prefixes
-Cannot start with:
-- `xn--`
-- `sthree-`
-- `sthree-configuration-`
-
-Memory: Some AWS system prefixes are reserved
+- 100 buckets default
+- Up to 1000 with request
+- Must empty bucket before deleting
+- No max bucket size
+- No limit on number of objects
+- Object size: 0 bytes to 5 TB
+- Over 100 MB use Multipart Upload
+- Outposts has limits
+- GET, PUT, LIST, DELETE are highly available
+- Create, Delete, Config changes should be done less often
 
 ---
 
-## 7. Restricted Suffixes
-Cannot end with:
-- `-s3alias`
-- `--ol-s3`
+# 3. Bucket Types
 
-Memory: Reserved for AWS
+Amazon S3 has 2 types of buckets:
+
+## General Purpose Buckets
+
+- Flat hierarchy
+- Original type
+- Recommended for most use cases
+- Works with all storage classes except S3 Express One Zone
+- No prefix limits
+- Default limit: 100 per account
+
+## Directory Buckets
+
+- Folder hierarchy
+- Only with S3 Express One Zone
+- Single digit millisecond PUT and GET
+- No prefix limits
+- Directories scale horizontally
+- Default limit: 10 per account
 
 ---
 
-## 8. Must Be Globally Unique
-- Bucket name must be unique across all AWS accounts worldwide
+# 4. S3 Folders
 
-Memory: One name globally
+- Not real folders
+- Just objects with prefix
+
+When created:
+- Zero byte object
+- Ends with `/`
+- Example: `myfolder/`
+
+Key points:
+- No separate metadata or permissions
+- Cannot be full or empty
+- Moving folder = renaming objects with same prefix
 
 ---
 
-## 9. Transfer Acceleration Rule
-- If using S3 Transfer Acceleration
-- Bucket name cannot contain dots
+# 5. S3 Object Overview
 
-Memory: Acceleration = no dots
+- Objects represent data, not infrastructure
+
+Key features:
+- ETag: detects content change
+- Checksums: integrity validation
+- Prefixes: simulate folders
+- Metadata: descriptive info
+- Tags: object level tagging
+- Object Lock: immutability
+- Versioning: multiple versions
 
 ---
 
-# 30-Second Recall Version
+# 6. S3 Objects – ETags
 
-3–63 characters  
-Lowercase only  
-Start and end clean  
-No double dots  
-Not an IP  
-No reserved prefix or suffix  
-Globally unique  
-No dots with acceleration
+## What is an ETag
+
+- HTTP response header
+- Detects content change without download
+- Usually a hash like MD5 or SHA-1
+- Used for cache validation
+
+## In S3
+
+- Every object has an ETag
+- Based on object content only
+- Changes when content changes, not metadata
+- May not be MD5 if encrypted or multipart
+- Identifies a specific object version
+
+Use case:
+- Detect object content changes programmatically
+
+---
+
+# 7. S3 Objects – Checksums
+
+## What is a Checksum
+
+- Used to verify data integrity
+- Detects corruption during upload or download
+- Ensures file was not altered in transit
+
+## In S3
+
+- S3 verifies integrity on upload and download
+- You can choose checksum algorithm during upload
+
+## Supported Algorithms
+
+- CRC32
+- CRC32C
+- SHA1
+- SHA256
+
+Memory:
+Checksum = integrity check  
+ETag = change detection
